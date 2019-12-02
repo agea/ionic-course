@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { S3 } from 'aws-sdk';
 import PouchDB from 'pouchdb/dist/pouchdb';
 
 @Component({
@@ -38,6 +39,33 @@ export class Tab2Page {
     }).then(res => {
       this.documents = res.rows.map(r => r.doc);
     });
+  }
+
+  upload() {
+    const s3 = new S3({
+      accessKeyId: 'AKIAQEWWE3BEABL4BV6V',
+      secretAccessKey: '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',
+      region: 'eu-west-1'
+    });
+
+    this.loadDocs().then(() => {
+      this.documents.forEach(doc => {
+        s3.putObject({
+          Bucket: 'corso-ionic-immagini',
+          Key: `photo-${doc._id}.jpg`,
+          ContentEncoding: 'base64',
+          ContentType: doc._attachments['photo.jpg'].content_type,
+          Body: doc._attachments['photo.jpg'].data,
+          ACL: 'public-read'
+        }, (err, data) => {
+          if (!err) {
+            this.db.remove(doc._id, doc._rev);
+          }
+          console.log(err);
+        });
+      });
+    });
+
   }
 
   photo() {
