@@ -88,7 +88,7 @@ export class Tab2Page {
           lng: this.coords.longitude,
           _attachments: {
             'photo.jpg': {
-              content_type: 'image/jpg',
+              content_type: 'image/jpeg',
               data: this.imageData
             }
           }
