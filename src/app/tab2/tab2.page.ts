@@ -22,11 +22,21 @@ export class Tab2Page {
     private camera: Camera,
   ) {
     this.db = new PouchDB('photos');
+    this.loadDocs();
   }
 
   geolocate() {
     return this.geolocation.getCurrentPosition().then(resp => {
       this.coords = resp.coords;
+    });
+  }
+
+  private loadDocs() {
+    return this.db.allDocs({
+      include_docs: true,
+      attachments: true
+    }).then(res => {
+      this.documents = res.rows.map(r => r.doc);
     });
   }
 
@@ -55,13 +65,10 @@ export class Tab2Page {
             }
           }
         };
-        this.db.post(mydata).then(() => {
-          this.db.allDocs().then(res => {
-            this.documents = res.rows.map(r => r);
-          });
-        }).catch(err => console.log);
-      }
-      );
+        return this.db.post(mydata);
+      })
+      .then(() => this.loadDocs())
+      .catch(err => console.log);
   }
 
 }

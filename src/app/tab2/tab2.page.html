@@ -14,8 +14,12 @@
   <ion-button (click)="photo()">Foto!</ion-button>
   <img *ngIf="base64Image" [src]="base64Image" width="320" alt="foto">
 
-  <pre>
-    {{documents | json}}
-  </pre>
+  <ul>
+    <li *ngFor="let doc of documents">
+      <img width="32" [alt]="doc._id" [src]="'data:image/jpeg;base64,'+ doc._attachments['photo.jpg'].data"> {{doc.lat}}
+      -
+      {{doc.lng}}
+    </li>
+  </ul>
 
 </ion-content>
