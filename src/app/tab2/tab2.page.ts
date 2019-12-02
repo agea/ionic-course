@@ -43,8 +43,8 @@ export class Tab2Page {
 
   upload() {
     const s3 = new S3({
-      accessKeyId: 'AKIAQEWWE3BEABL4BV6V',
-      secretAccessKey: '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',
+      accessKeyId: 'xxx',
+      secretAccessKey: 'xxx',
       region: 'eu-west-1'
     });
 
