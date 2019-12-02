@@ -1,5 +1,7 @@
 {
   "name": "corso-ionic",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

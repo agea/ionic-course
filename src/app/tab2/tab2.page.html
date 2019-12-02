@@ -6,4 +6,16 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <ion-button (click)="geolocate()">Dove sono?</ion-button>
+  <pre>
+    {{coords | json}}
+  </pre>
+  <ion-button (click)="photo()">Foto!</ion-button>
+  <img *ngIf="base64Image" [src]="base64Image" width="320" alt="foto">
+
+  <pre>
+    {{documents | json}}
+  </pre>
+
+</ion-content>

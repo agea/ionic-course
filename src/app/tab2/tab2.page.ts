@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import PouchDB from 'pouchdb/dist/pouchdb';
 
 @Component({
   selector: 'app-tab2',
@@ -7,6 +10,58 @@ import { Component } from '@angular/core';
 })
 export class Tab2Page {
 
-  constructor() {}
+  coords: any;
+  base64Image: string;
+  documents: PouchDB.Core.Document<any>[];
+  db: PouchDB.Database;
+  imageData: string;
+
+
+  constructor(
+    private geolocation: Geolocation,
+    private camera: Camera,
+  ) {
+    this.db = new PouchDB('photos');
+  }
+
+  geolocate() {
+    return this.geolocation.getCurrentPosition().then(resp => {
+      this.coords = resp.coords;
+    });
+  }
+
+  photo() {
+    const options: CameraOptions = {
+      quality: 100,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE
+    };
+
+    this.camera.getPicture(options).then((imageData) => {
+      this.base64Image = 'data:image/jpeg;base64,' + imageData;
+      this.imageData = imageData;
+    }, (err) => {
+      // Handle error
+    }).then(() => this.geolocate())
+      .then(() => {
+        const mydata = {
+          lat: this.coords.latitude,
+          lng: this.coords.longitude,
+          _attachments: {
+            'photo.jpg': {
+              content_type: 'image/jpg',
+              data: this.imageData
+            }
+          }
+        };
+        this.db.post(mydata).then(() => {
+          this.db.allDocs().then(res => {
+            this.documents = res.rows.map(r => r);
+          });
+        }).catch(err => console.log);
+      }
+      );
+  }
 
 }
